@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project-module
+  type="WEB"
+  name="cxf-activemq-demo"
+  id="myeclipse.1367114073056"
+  context-root="/cxf-activemq-demo"
+  j2ee-spec="6.0"
+  archive="cxf-activemq-demo.war">
+  <attributes>
+    <attribute name="webrootdir" value="src/main/webapp" />
+  </attributes>
+</project-module>
+

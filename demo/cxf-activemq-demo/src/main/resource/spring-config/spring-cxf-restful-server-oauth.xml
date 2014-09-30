@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:jaxws="http://cxf.apache.org/jaxws"
+	xmlns:jaxrs="http://cxf.apache.org/jaxrs" xmlns:cxf="http://cxf.apache.org/core"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:mvc="http://www.springframework.org/schema/mvc" xmlns:soap="http://cxf.apache.org/bindings/soap"
+	xsi:schemaLocation="     
+	http://www.springframework.org/schema/beans 
+	http://www.springframework.org/schema/beans/spring-beans.xsd  
+	http://www.springframework.org/schema/context 
+	http://www.springframework.org/schema/context/spring-context-4.0.xsd
+	http://www.springframework.org/schema/mvc      
+    http://www.springframework.org/schema/mvc/spring-mvc-4.0.xsd    
+	http://cxf.apache.org/bindings/soap 
+	http://cxf.apache.org/schemas/configuration/soap.xsd   
+	http://cxf.apache.org/core 
+	http://cxf.apache.org/schemas/core.xsd  
+	http://cxf.apache.org/jaxws   
+	http://cxf.apache.org/schemas/jaxws.xsd
+	http://cxf.apache.org/jaxrs
+    http://cxf.apache.org/schemas/jaxrs.xsd">
+
+	<import resource="classpath:META-INF/cxf/cxf.xml" />
+	<import resource="classpath:META-INF/cxf/cxf-extension-soap.xml" />
+	<import resource="classpath:META-INF/cxf/cxf-servlet.xml" />
+	
+	<bean id="oauthDataProvider" class="com.roc.cxf.service.ws.oauth.server.OAuthDataProvider" />
+	<bean id="jsonProvider" class="org.apache.cxf.rs.security.oauth2.provider.OAuthJSONProvider"/>
+	
+	<bean id="accessTokenService" class="org.apache.cxf.rs.security.oauth2.services.AccessTokenService">
+         <property name="dataProvider" ref="oauthDataProvider"/>
+    </bean>
+    
+    <bean id="oauthAuthorizationService" class="org.apache.cxf.rs.security.oauth2.services.AuthorizationCodeGrantService">
+    	<property name="dataProvider" ref="oauthDataProvider"/>
+    </bean>
+     
+    <!-- RS认证服务 -->
+	<bean id="oauthService" class="com.roc.cxf.service.ws.oauth.server.OAuthService">
+		<property name="oAuthDataProvider" ref="oauthDataProvider" />
+	</bean>
+	
+	<bean id="registerDispatcherProvider" class="org.apache.cxf.jaxrs.provider.RequestDispatcherProvider">
+		
+	</bean>
+	
+	<jaxrs:server id="oauth2Server" address="/oauth2">
+		<jaxrs:serviceBeans>
+			<ref bean="oauthService"/>
+			<ref bean="oauthAuthorizationService"/>
+			<ref bean="accessTokenService"/>
+		</jaxrs:serviceBeans>
+		<jaxrs:providers>
+			<ref bean="jsonProvider"/>
+			<ref bean="registerDispatcherProvider"/>
+		</jaxrs:providers>
+	</jaxrs:server>
+	
+	<!-- 第三方服务配置－开始 -->
+	
+	<!-- 第三方测试服务 -->
+	<bean id="clientFactory" class="org.apache.cxf.jaxrs.client.JAXRSClientFactoryBean">
+		<property name="address" value="http://localhost:8090/cxf-activemq-demo/services/oauth2/token" />
+		<property name="headers">
+			<map>
+				<entry key="Accept" value="application/json" />
+			</map>
+		</property>
+	</bean>
+	<bean id="serviceClient" factory-bean="clientFactory" factory-method="createWebClient" />
+	
+	<bean id="clientOauthDataManager" class="com.roc.cxf.service.ws.oauth.thirdparty.ClientOAuthDataManager">
+		<property name="accessTokenService" ref="serviceClient" />
+		<property name="authorizationServiceURI" value="http://localhost:8090/cxf-activemq-demo/services/oauth2/authorize"/>
+	</bean>
+	
+	<bean id="accountsService" class="com.roc.cxf.service.ws.oauth.thirdparty.AccountsService">
+		<property name="clientOAuthDataManager" ref="clientOauthDataManager" />
+	</bean>
+	
+	<jaxrs:server id="accountsServer" address="/thirdParty">
+		<jaxrs:serviceBeans>
+			<ref bean="accountsService"/>
+		</jaxrs:serviceBeans>
+	</jaxrs:server>
+	
+	<!-- 第三方服务配置－结束 -->
+	
+	<!-- Logging settings, shared by all applications --> 
+	 <bean id="logInbound"
+	     class="org.apache.cxf.interceptor.LoggingInInterceptor" />
+	 <bean id="logOutbound"
+	     class="org.apache.cxf.interceptor.LoggingOutInterceptor" />
+	 
+	 <cxf:bus>
+	    <cxf:inInterceptors>
+	 	    <ref bean="logInbound" />
+	 	</cxf:inInterceptors>
+	 	<cxf:outInterceptors>
+	 		<ref bean="logOutbound" />
+	 	</cxf:outInterceptors>
+	 </cxf:bus>
+	
+</beans>

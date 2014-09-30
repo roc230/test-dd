@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="     
+						http://www.springframework.org/schema/beans 
+						http://www.springframework.org/schema/beans/spring-beans.xsd  
+						http://www.springframework.org/schema/context 
+						http://www.springframework.org/schema/context/spring-context-3.2.xsd   
+						">
+						
+	<!-- activeMQ连接工厂实例 -->
+	<bean id="activeMQConnectionFactory" class="org.apache.activemq.ActiveMQConnectionFactory">
+		<property name="brokerURL" value="tcp://localhost:61616" />
+	</bean>
+	<!-- activeMQ连接池工厂配置实例 -->
+	<bean id="pooledConnectionFactoryBean" class="org.apache.activemq.pool.PooledConnectionFactoryBean">
+		<property name="connectionFactory" ref="activeMQConnectionFactory" />
+		<property name="maxConnections" value="10" />
+	</bean>
+	
+	<!-- spring的缓存连接工厂实例，用于管理activeMQ的连接工厂或连接池工厂 -->
+	<bean id="cachingConnectionFactory" class="org.springframework.jms.connection.CachingConnectionFactory">
+		<property name="targetConnectionFactory" ref="pooledConnectionFactoryBean" />
+	</bean>
+	
+	<!-- spring提供的jms工具类，可以用于消息发送和接收 -->
+	<bean id="jmsTemplate" class="org.springframework.jms.core.JmsTemplate">
+		<property name="connectionFactory" ref="cachingConnectionFactory"/>
+	</bean>
+	
+	<context:component-scan base-package="com.roc.activemq.producer.service.impl" />
+	
+	<!-- 配置队列目的地，用于点对点消息 -->
+	<bean id="queueDestination" class="org.apache.activemq.command.ActiveMQQueue">
+		<constructor-arg value="queue"/>
+	</bean>
+	<!-- 配置队列目的地，用于一对多消息 -->
+	<bean id="topicDestination" class="org.apache.activemq.command.ActiveMQTopic">
+		<constructor-arg value="topic" />
+	</bean>
+	
+	<!-- 消息监听器声明 -->
+	<bean id="consumerMessageListener" class="com.roc.activemq.consumer.ConsumerMessageListener" />
+	<!-- 声明消息监听器的容器 -->
+	<bean id="defaultMessageListenerContainer" class="org.springframework.jms.listener.DefaultMessageListenerContainer">
+		<property name="connectionFactory" ref="cachingConnectionFactory"/>
+		<property name="destination" ref="queueDestination"/>
+		<property name="messageListener" ref="consumerMessageListener"/>
+	</bean>
+</beans>

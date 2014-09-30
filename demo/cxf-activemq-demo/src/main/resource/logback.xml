@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<configuration scan="true" scanPeriod="60 seconds" debug="false" >
+	<property name="applicationName" value="jreap-framework" />   
+
+    <contextName>${applicationName}</contextName>  
+    <substitutionProperty name="log.base" value="logs" /> 
+    <substitutionProperty name="log.filepath" value="d:\\logback_logspace"/> 
+
+	<!-- 控制台输出 -->
+	<appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+		<encoding>UTF-8</encoding>
+		<layout class="ch.qos.logback.classic.PatternLayout">
+			<pattern>
+				${applicationName} [%t]%date{yyyy-MM-dd hh:mm} [%7level] %logger{24} --- %m%n
+			</pattern>
+		</layout>
+	</appender>
+	
+	<!-- dao输出到文件 -->
+<!-- 	<appender name="logfile-dao" class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<filter class="ch.qos.logback.core.filter.EvaluatorFilter">
+			<evaluator name="myEva_dao">
+				<expression>message.contains("dao.impl")</expression>
+			</evaluator>
+			<onMatch>ACCEPT</onMatch>
+			<onMismatch>DENY</onMismatch>
+		</filter>
+		<encoding>utf-8</encoding>
+		<file>${log.filepath}/${applicationName}_dao.log</file>
+		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+			<fileNamePattern>${log.filepath}.%d{yyyy-MM-dd}_dao.log.zip</fileNamePattern>
+		</rollingPolicy>
+		<layout class="ch.qos.logback.classic.PatternLayout">
+			<pattern>%date [%thread] %-5level %logger{80} - %msg%n</pattern>
+		</layout>
+	</appender> -->
+	
+	<!-- service输出到文件 -->
+<!-- 	<appender name="logfile-service" class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<filter class="ch.qos.logback.core.filter.EvaluatorFilter">
+			<evaluator name="myEval_service">
+				<expression>message.contains("service.impl")</expression>
+			</evaluator>
+			<onMatch>ACCEPT</onMatch>
+			<onMismatch>DENY</onMismatch>
+		</filter>
+		<encoding>utf-8</encoding>
+		<file>${log.filepath}/${applicationName}_service.log</file>
+		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+			<fileNamePattern>${log.base}.%d{yyyy-MM-dd}_service.log.zip</fileNamePattern>
+		</rollingPolicy>
+		<layout class="ch.qos.logback.classic.PatternLayout">
+			<pattern>%date [%thread] %-5level %logger{80} - %msg%n</pattern>
+		</layout>
+	</appender> -->
+	
+	<!-- action输出到文件 -->
+<!-- 	<appender name="logfile-action" class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<filter class="ch.qos.logback.core.filter.EvaluatorFilter">
+			<evaluator name="myEval_action">
+				<expression>message.contains("action")</expression>
+			</evaluator>
+			<onMatch>ACCEPT</onMatch>
+			<onMismatch>DENY</onMismatch>
+		</filter>
+		<encoding>utf-8</encoding>
+		<file>${log.filepath}/${applicationName}_action.log</file>
+		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+			<fileNamePattern>${log.base}.%d{yyyy-MM-dd}_action.log.zip</fileNamePattern>
+		</rollingPolicy>
+		<layout class="ch.qos.logback.classic.PatternLayout">
+			<pattern>%date [%thread] %-5level %logger{80} - %msg%n</pattern>
+		</layout>
+	</appender> -->
+	
+	<logger name="org.hibernate" level="WARN" />
+	<logger name="org.springframework" level="WARN"  />
+	<logger name="com.opensymphony.xwork2" level="WARN"  />
+	<logger name="org.hibernate.type" level="WARN"  />
+
+	
+	<root>
+	<!-- TRACE, DEBUG, INFO, WARN, ERROR, ALL, OFF 大小写无关 -->
+		<level value="INFO" />
+		<!-- 
+		<appender-ref ref="MY_FILE" />   		
+		<appender-ref ref="MY_FILE_01" />   
+		<appender-ref ref="MY_FILE_02" />   		
+		-->
+		<appender-ref ref="STDOUT" />
+	<!-- 	<appender-ref ref="logfile-dao"/>
+		<appender-ref ref="logfile-service"/>
+		<appender-ref ref="logfile-action"/> -->
+	</root>
+</configuration>

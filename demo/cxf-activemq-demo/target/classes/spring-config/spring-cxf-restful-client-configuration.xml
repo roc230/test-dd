@@ -1,0 +1,59 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:jaxws="http://cxf.apache.org/jaxws" 
+	xmlns:jaxrs="http://cxf.apache.org/jaxrs"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="
+		http://www.springframework.org/schema/beans 
+		http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://cxf.apache.org/jaxws 
+		http://cxf.apache.org/schemas/jaxws.xsd
+		http://cxf.apache.org/jaxrs
+    	http://cxf.apache.org/schemas/jaxrs.xsd">
+    	
+    <bean id="addAuthInfoOutInterceptor" class="com.roc.cxf.service.ws.interceptor.AddAuthInfoOutInterceptor"/>
+    	
+    	
+	<jaxrs:client id="userWS" address="http://localhost:8080/cxf-activemq-demo/services/rest"
+			serviceClass="com.roc.cxf.service.ws.restful.IUserWebService" />
+	<jaxrs:client id="thirdUserWS" address="http://localhost:8080/cxf-activemq-demo/services/third"
+			serviceClass="com.roc.cxf.service.ws.restful.IUserWebService">
+			<jaxrs:providers>
+				<ref bean="jacksonProvider"/>
+				<ref bean="dom4jProvider"/>
+			</jaxrs:providers>
+	</jaxrs:client>
+	<jaxrs:client id="personWS" address="http://localhost:8080/cxf-activemq-demo/services/rest"
+			serviceClass="com.roc.cxf.service.ws.restful.IPersonWebService">
+			<jaxrs:providers>
+				<ref bean="jacksonProvider"/>
+				<ref bean="dom4jProvider"/>
+			</jaxrs:providers>
+	</jaxrs:client>
+	
+	<jaxrs:client id="accountWS" address="http://localhost:8080/cxf-activemq-demo/services/rest" 
+			serviceClass="com.roc.cxf.service.ws.restful.IAccountWebService">
+			<jaxrs:providers>
+				<ref bean="jacksonProvider"/>
+				<ref bean="dom4jProvider"/>
+			</jaxrs:providers>
+			<jaxrs:outInterceptors>
+				<ref bean="addAuthInfoOutInterceptor"/>
+			</jaxrs:outInterceptors>
+	</jaxrs:client>
+	
+	<jaxrs:client id="authenticateWS" address="http://localhost:8080/cxf-activemq-demo/services/rest" 
+			serviceClass="com.roc.cxf.service.ws.restful.IAuthenticateWebService">
+			<jaxrs:providers>
+				<ref bean="jacksonProvider"/>
+				<ref bean="dom4jProvider"/>
+			</jaxrs:providers>
+			<jaxrs:outInterceptors>
+				<ref bean="addAuthInfoOutInterceptor"/>
+			</jaxrs:outInterceptors>
+	</jaxrs:client>
+	
+	<bean id="dom4jProvider" class="org.apache.cxf.jaxrs.provider.dom4j.DOM4JProvider" />		
+	<bean id="jacksonProvider" class="com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider" />
+	
+</beans>

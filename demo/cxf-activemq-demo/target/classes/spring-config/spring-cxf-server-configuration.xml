@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xmlns:jaxws="http://cxf.apache.org/jaxws"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:soap="http://cxf.apache.org/bindings/soap"
+	xsi:schemaLocation="     
+http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd  
+http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.2.xsd   
+http://cxf.apache.org/bindings/soap http://cxf.apache.org/schemas/configuration/soap.xsd     
+http://cxf.apache.org/jaxws     
+http://cxf.apache.org/schemas/jaxws.xsd">
+
+	<import resource="classpath:META-INF/cxf/cxf.xml" /> 
+    <import resource="classpath:META-INF/cxf/cxf-extension-soap.xml" /> 
+    <import resource="classpath:META-INF/cxf/cxf-servlet.xml" /> 
+    
+    <!-- 自动扫描WebService服务实现类目录 -->
+    <context:component-scan base-package="com.roc.cxf.service.ws.impl" />
+    
+    <!-- 设置webservice注解自动配置发布代理 -->
+    <bean id="webServicesAgent" class="org.apache.cxf.spring.remoting.Jsr181HandlerMapping">
+    	<!-- 设置自动url前缀为“/” -->
+    	<property name="urlPrefix" value="/" />
+    </bean>
+    
+    <!-- 如果使用非自动注解的方式发布，使用下面的方式发布 -->
+	<!-- “#workService”引用spring容器的"workService"实例 -->
+	<!-- <jaxws:endpoint id="workServicews"  implementor="#workService" address="/workService" />
+					
+	<jaxws:endpoint id="helloServicews" implementor="#helloWorldService" address="/helloService"/> -->
+
+</beans>
